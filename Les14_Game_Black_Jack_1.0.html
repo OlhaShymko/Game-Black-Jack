@@ -1,0 +1,161 @@
+<meta charset="utf-8">
+<script> 
+
+function getRandomInt(min, max){
+	return Math.floor(Math.random() * (max - min + 1))+ min;
+} 
+function getCard(){
+	var cards = ['6','7','8','9','10','J','Q','K','A'];
+	return cards[getRandomInt(0,cards.length-1)];
+} 
+function getSum(arr){
+	var sum = 0;
+	//сначала считаем все карты кроме тузов
+	for(var i=0;i<arr.length;i++){
+		var card = arr[i];
+		if(card !='A'){
+			if(card=='J' || card=='Q' || card=='K'){
+				sum=sum+10;
+			} 
+			else{
+				sum=sum+parseInt(card);
+			}
+		}
+	}
+	//туз считается как 1, если текущая сумма больше 10, иначе - как 11
+
+	for (var i=0;i<arr.length; i++) {
+		var card = arr[i];
+		if (card=='A') {
+			if (sum>10) {
+				sum=sum+1;
+			} 
+			else{
+				sum=sum+11;
+			}
+		}
+	}
+		
+	return sum;
+} 
+//текущий статус игры 
+function getStatus(){
+		return 'Дилер: ' + dealer.join(' ') + ' Игрок: ' + player.join(' ') + '.';
+	}
+	var name = prompt('Желаешь проверить свою удачу?))\n Хорошо! Начнем! \n Как Вас величать? ');
+	//игрок делает ставки 
+	var bank = parseInt(prompt('С какой суммой Вы готовы расстаться в нашем казино? )) : '));
+	var start_bank=bank;
+	//подсчет колличества раундов игры 
+	var raunds = parseInt (prompt('Колличество раундов: '));
+	//cумма ставки
+	var bets = parseInt(prompt('Сумма ставки : '));
+	function pobeda(){
+		bank=bank+bets;
+		return bank;
+	}
+	function porazenie(){
+		bank=bank-bets;
+		return bank;
+	}
+	function JackPot(){
+		bank=bank+1000;
+		return bank;
+	}
+
+	for(var i=0;i<raunds;i++ ){ 
+	//массив карт диллера
+	var dealer = [getCard()];
+	//массив карт игрока
+	var player = [getCard(), getCard()];
+	//проверяем, нет ли перебора 
+	sum = getSum(player);
+	if (getSum(player)>21) {
+			alert(getStatus() + ' Перебор карт. ' + name+ ', Вы проиграли. ((( ' + getSum(player) + '. \n Остаток на Вашем счету: ' + porazenie() +' $');
+				break;
+			}	
+	if(getSum(player) == 21){
+			alert(getSum(player) + ' ' + name+ ', ты везунчик!! Black Jack на раздаче!!! $_$ ' + JackPot() + ' $');
+				break;
+		}
+	else{
+   //запоминание ответа игрока
+	var answer = '';
+   //запрос о решении игрока 
+	do{ 
+		answer = prompt(getStatus() + ' ' + name + ', хотите еще одну карту? 1-да, иначе - нет(0) ');
+  //сдаем карту игроку либо прекращаем игру
+	if(answer==1){
+			player.push(getCard());
+		//проверяем, нет ли перебора 
+				sum = getSum(player);
+		if(getSum(player)==21){
+			alert(getStatus() + ' ' + name + ', поздравляем Вас с победой! ' + bets+' $. ' + '\n Остаток на счету: ' + pobeda()+' $');
+				break;
+			}
+		else if (getSum(player)>21) {
+			alert(getStatus() + ' Перебор карт. ' + name+ ', Вы проиграли. ((( ' + getSum(player) + '. \n Остаток на Вашем счету: ' + porazenie() +' $');
+				break;
+			}	
+		}
+
+	else{
+			//игрок закончил брать карты
+			//теперь карты берет диллер. логика игры диллера
+			while(getSum(dealer) < 17){
+				dealer.push(getCard());
+			}; 
+			//проверяем результат
+			var sumDealer = getSum(dealer);
+			var sumPlayer = getSum(player);
+
+			if (sumDealer == 21) {
+				alert('У диллера Black Jack! ' + getStatus() + ' . \n Остаток на Вашем счету: ' + porazenie() +' $');
+				break;
+			}
+			else if(sumPlayer==21){
+				alert(getStatus() + ' ' + name + ', поздравляем Вас с победой! ' + bets+' $. ' + '\n Остаток на счету: ' + pobeda()+' $');
+				break;
+			}
+			else if (sumPlayer>21) {
+				alert(getStatus() + ' Перебор карт. ' + name+ ', Вы проиграли. ((( ' + getSum(player) + '. \n Остаток на Вашем счету: ' + porazenie() +' $');
+				break;
+			}	
+			else if(sumDealer > 21){
+				alert('У диллера перебор! ' + getStatus()+ ' ' + name+ ', Ваша победа. \n Остаток на Вашем счету: ' + pobeda() +' $');
+				break;
+			}
+			else if(sumPlayer == sumDealer){
+				alert('Ничья! о_О ' + getStatus() + '. \n Остаток на Вашем счету: ' + porazenie() +' $');
+				break;
+			}
+			else if(sumPlayer > sumDealer){
+				alert(getStatus() + ' ' + name+ ', поздравляем Вас с победой! '+ bets+' $. \n Остаток на счету: ' + pobeda()+' $');
+				break;
+			}
+			else if(sumPlayer < sumDealer){
+				alert(getStatus() + ' Победа Дилера ' + getSum(dealer) + ' ' + name + ', Ваше поражение :( ' + getSum(player) + '. \n Остаток на счету: ' + porazenie() +' $');
+				break;
+				}
+			else{
+				alert('почему я тут?? ');
+				}
+			}
+
+		} while(answer==1);
+	}
+}
+
+if(bank>start_bank){
+	alert(name+ ', игра подошла к завершению! \n Спасибо, что посетили наше казино\n Вы действительно везунчик!!! \n'+name+', Ваш выигрыш в казино составляет ' + bank+'$!!!');
+}	
+else if (bank<start_bank) {
+	alert(name+ ', игра подошла к завершению! \n Спасибо, что посетили наше казино\n К огромному сожадению удача сегодня не на вашей стороне T_T ' + bank+ ' $\n' + name + ' завтра будет лучше! Обязaтельно возвращайтесь!!');
+}
+else {
+	alert(name +', игра подошла к завершению! \n Спасибо, что посетили наше казино\n Вы действительно везунчик!!! \n'+name+', Ваш выигрыш в казино составляет ' + bank+'$!!!');
+}
+
+	
+	
+</script>
